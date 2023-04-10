@@ -1,31 +1,28 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
-import { GetServerSidePropsContext, NextPage } from "next";
+    import { GetServerSidePropsContext, NextPage } from "next";
 import axios from "axios";
-import { HousesResponse } from "@/models/houses";
 import styled from "styled-components";
-import HouseWidget from "@/components/HouseWidget";
 import { useEffect, useState } from "react";
+import { WizardsResponse } from "@/models/wizards";
+import WizardWidget from "@/components/WizardWidget";
 import Link from "next/link";
 
-const Home: NextPage<{ houses: HousesResponse[] }> = ({ houses }) => {
+const Wizards: NextPage<{ wizards: WizardsResponse[] }> = ({ wizards }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [currentHouse, setCurrentHouse] = useState<HousesResponse | undefined>(
-    houses[0]
+  const [currentWizard, setCurrentWizard] = useState<WizardsResponse | undefined>(
+    wizards[0]
   );
 
   useEffect(() => {
-    setCurrentHouse(houses.at(currentIndex));
+    setCurrentWizard(wizards.at(currentIndex));
   }, [currentIndex]);
 
   return (
     <MainContent>
-      <h1>Houses</h1>
-      <Link href={"/wizard"} >Go to wizards</Link>
-      {(!houses || houses.length === 0) && <p>No Houses</p>}
-      {houses && houses.length > 0 && (
+      <h1>Wizards</h1>
+      <Link href={"/"} >Go to  Houses</Link>
+
+      {(!wizards || wizards.length === 0) && <p>No wizards</p>}
+      {wizards && wizards.length > 0 && (
         <Container>
           <Button
             onClick={() => {
@@ -36,12 +33,12 @@ const Home: NextPage<{ houses: HousesResponse[] }> = ({ houses }) => {
           >
             {"<"}
           </Button>
-          {houses && houses.length > 0 && currentHouse && (
-            <HouseWidget house={currentHouse} />
+          {currentWizard && (
+            <WizardWidget wizard={currentWizard} showElixirs={false}/>
           )}
           <Button
             onClick={() => {
-              if (currentIndex < houses.length - 1) {
+              if (currentIndex < wizards.length - 1) {
                 setCurrentIndex(currentIndex + 1);
               }
             }}
@@ -79,17 +76,17 @@ const Button = styled.div`
   cursor: pointer;
 `;
 
-export default Home;
+export default Wizards;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
     const response = await axios.get(
-      "https://wizard-world-api.herokuapp.com/Houses"
+      "https://wizard-world-api.herokuapp.com/Wizards"
     );
-    const data: HousesResponse[] = response.data;
+    const data: WizardsResponse[] = response.data;
     return {
       props: {
-        houses: data,
+        wizards: data,
       },
     };
   } catch (error) {
